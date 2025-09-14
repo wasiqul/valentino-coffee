@@ -1,47 +1,23 @@
 import {test, expect} from '@playwright/test'
+import { addToCartProduct } from './pages/shop';
+import { assertProduct, getSubTotal } from './pages/cart';
 
 test('Add product to cart', async ({page}) => {
+  // Go to the products page
+  await page.goto('/products');
 
-  await page.goto('/');
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Valentino's Magic Beans/);
-
-  // Go to the shop page
-  await page.getByRole('link', { name: 'Shop', exact: true }).click();
-  await expect(page).toHaveURL('https://valentinos-magic-beans.click/products');
-
-  // Get product wrappers
-  const firstProductWrapper = page.locator('.p-6').first();
-  const lastProductWrapper = page.locator('.p-6').last();
-
-  // Essentials for the first product
-  const firstProductName = await firstProductWrapper.getByRole('heading').textContent();
-  const firstProductPriceWithSign = await firstProductWrapper.getByText('$').textContent();
-  const firstProductPrice = Number(firstProductPriceWithSign!.slice(1)); // Remove the dollar sign
-
-  // Add the first product to the cart
-  await firstProductWrapper.getByRole('button', { name: 'Add to cart' }).click();
+  const productInCart = await addToCartProduct(page, 3); // Add the thierd product to the cart
 
   // Go to the cart page
   await page.locator('[data-test-id="header-cart-button"]').getByRole('button').click();
   await expect(page).toHaveURL('https://valentinos-magic-beans.click/cart');
 
   // Verify the product name
-  await expect(page.getByRole('heading', { name: firstProductName! })).toBeVisible();
+  await assertProduct(page, productInCart.name!);
 
   // Get the subtotal
-  const subtotalWithSign = await page.getByText('Subtotal').locator('..').locator('.font-semibold').textContent();
-  const subtotal = Number(subtotalWithSign!.slice(1)); // Remove the dollar sign
-  
-  // Verify the subtotal with the product price
-  expect(subtotal).toEqual(firstProductPrice);
+  const subTotal = await getSubTotal(page);
 
-  // Essentials for the last product
-  /*
-  const lastProductName = await lastProductWrapper.getByRole('heading').textContent();
-  console.log(lastProductName)
-  const lastProductPriceWithSign = await lastProductWrapper.getByText('$').textContent();
-  const lastProductPrice = Number(lastProductPriceWithSign!.slice(1)); // Remove the dollar sign
-  console.log(lastProductPrice)
-  */
+  // Verify the subtotal with the product price
+  expect(subTotal).toEqual(productInCart.price);
 })
