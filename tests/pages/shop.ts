@@ -1,6 +1,6 @@
 import { Page } from "@playwright/test";
 
-export async function addToCartProduct(page: Page, productIndex: number) {
+export async function addToCart(page: Page, productIndex: number) {
     
     // Get product wrapper
     const productWrapper = page.locator('.p-6').nth(productIndex);
