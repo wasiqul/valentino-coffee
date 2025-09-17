@@ -1,11 +1,22 @@
-import { Page } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 
-export async function getOrderId(page: Page) {
-    const orderWrapper = await page.getByText('Your Order ID is:').locator('..');
-    const orderId = await orderWrapper.getByRole('paragraph').nth(1).textContent();
-    return orderId;
+export class OrderConfirmationPage {
+    orderWrapperLocator: Locator;
+    orderIdLocator: Locator;
+    trackOrderButtonLocator: Locator;
+    
+    constructor(page: Page) {
+        this.orderWrapperLocator = page.getByText('Your Order ID is:').locator('..');
+        this.orderIdLocator = this.orderWrapperLocator.getByRole('paragraph').nth(1);
+        this.trackOrderButtonLocator = page.getByRole('button', { name: 'Track Your Order' });
+    }
+
+    async getOrderId() {
+        return this.orderIdLocator.textContent();
+    }
+
+    async goToTrackOrder() {
+        await this.trackOrderButtonLocator.click();
+    }
 }
 
-export async function goToTrackOrder(page: Page) {
-    await page.getByRole('button', { name: 'Track Your Order' }).click();
-}

@@ -1,48 +1,58 @@
-import { Page } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
+import { customer } from "../data/customer-info";
 
-export const customer = {
-    contact:{
-        firstName: 'Wasiqul',
-        lastName: 'Huq',
-        email: 'wasiqul@gml.com'
-    },
-    shipping:{
-        address: 'Dhaka, Bangladesh',
-        city: 'Dhaka',
-        country: 'Bangladesh',
-        zipCode: '12078'
-    },
-    payment: {
-        nameOnCard: 'Wasiqul Huq',
-        cardNumber: '4242 4242 4242 4242',
-        expiry: '10/30',
-        cvc: '123'
+
+export class CheckoutPage {
+    firstNameLocator: Locator;
+    lastNameLocator: Locator;
+    emailLocator: Locator;
+    shippingAddressLocator: Locator;
+    cityLocator: Locator;
+    countryLocator: Locator;
+    zipCodeLocator: Locator;
+    nameOnCardLocator: Locator;
+    cardNumberLocator: Locator;
+    cardExpiryLocator: Locator;
+    cardCvcLocator: Locator;
+    placeOrderButtonLocator: Locator;
+
+    constructor(page: Page) {
+        this.firstNameLocator = page.locator('[data-test-id="checkout-firstname-input"]');
+        this.lastNameLocator = page.locator('[data-test-id="checkout-lastname-input"]');
+        this.emailLocator = page.locator('[data-test-id="checkout-email-input"]');
+        this.shippingAddressLocator = page.locator('[data-test-id="checkout-address-input"]');
+        this.cityLocator = page.locator('[data-test-id="checkout-city-input"]');
+        this.countryLocator = page.locator('[data-test-id="checkout-country-input"]');
+        this.zipCodeLocator = page.locator('[data-test-id="checkout-zipcode-input"]');
+        this.nameOnCardLocator = page.locator('[data-test-id="checkout-cardname-input"]');
+        this.cardNumberLocator = page.locator('[data-test-id="checkout-cardnumber-input"]');
+        this.cardExpiryLocator = page.locator('[data-test-id="checkout-cardexpiry-input"]');
+        this.cardCvcLocator = page.locator('[data-test-id="checkout-cardcvc-input"]');
+        this.placeOrderButtonLocator = page.locator('[data-test-id="place-order-button"]');
+    }
+
+    async fillContactInfo() {
+        await this.firstNameLocator.fill(customer.contact.firstName);
+        await this.lastNameLocator.fill(customer.contact.lastName);
+        await this.emailLocator.fill(customer.contact.email);
+    }
+
+async fillShippingAddress() {
+        await this.shippingAddressLocator.fill(customer.shipping.address);
+        await this.cityLocator.fill(customer.shipping.city);
+        await this.countryLocator.fill(customer.shipping.country);
+        await this.zipCodeLocator.fill(customer.shipping.zipCode);
+    }
+
+    async fillPaymentInfo() {
+        await this.nameOnCardLocator.fill(customer.payment.nameOnCard);
+        await this.cardNumberLocator.fill(customer.payment.cardNumber);
+        await this.cardExpiryLocator.fill(customer.payment.expiry);
+        await this.cardCvcLocator.fill(customer.payment.cvc);
+    }
+
+    async placeOrder() {
+        await this.placeOrderButtonLocator.click();
     }
 }
 
-export async function fillContactInfo(page: Page) {
-    await page.locator('[data-test-id="checkout-firstname-input"]').fill(customer.contact.firstName);
-    await page.locator('[data-test-id="checkout-lastname-input"]').fill(customer.contact.lastName);
-    await page.locator('[data-test-id="checkout-email-input"]').fill(customer.contact.email);
-    await page.waitForTimeout(1000); // pause before filling the next section
-}
-
-export async function fillShippingAddress(page: Page) {
-    await page.locator('[data-test-id="checkout-address-input"]').fill(customer.shipping.address);
-    await page.locator('[data-test-id="checkout-city-input"]').fill(customer.shipping.city);
-    await page.locator('[data-test-id="checkout-country-input"]').fill(customer.shipping.country);
-    await page.locator('[data-test-id="checkout-zipcode-input"]').fill(customer.shipping.zipCode);
-    await page.waitForTimeout(1000); // pause before filling the next section
-}
-
-export async function fillPaymentInfo(page: Page) {
-    await page.locator('[data-test-id="checkout-cardname-input"]').fill(customer.payment.nameOnCard);
-    await page.locator('[data-test-id="checkout-cardnumber-input"]').fill(customer.payment.cardNumber);
-    await page.locator('[data-test-id="checkout-cardexpiry-input"]').fill(customer.payment.expiry);
-    await page.locator('[data-test-id="checkout-cardcvc-input"]').fill(customer.payment.cvc);
-    await page.waitForTimeout(1000); // pause before clicking the place order button
-}
-
-export async function placeOrder(page: Page) {
-    await page.getByRole('button', { name: 'Place Order' }).click();
-}

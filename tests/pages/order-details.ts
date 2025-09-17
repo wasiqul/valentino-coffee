@@ -1,8 +1,20 @@
-import { Page } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
 
-export async function getOrderDetails(page: Page) {
-    const orderDetailsWrapper = page.locator('.p-6');
-    const orderItem = await orderDetailsWrapper.getByRole('paragraph').nth(1).textContent();
-    const customerName = await orderDetailsWrapper.getByRole('paragraph').nth(4).textContent();
-    return { orderItem, customerName };
+export class OrderDetailsPage {
+    orderDetailsWrapper: Locator;
+    orderItemLocator: Locator;
+    customerNameLocator: Locator;
+
+    constructor(page: Page) {
+        this.orderDetailsWrapper = page.locator('.p-6');
+        this.orderItemLocator = this.orderDetailsWrapper.getByRole('paragraph').nth(1);
+        this.customerNameLocator = this.orderDetailsWrapper.getByRole('paragraph').nth(4);
+    }
+
+    async getOrderDetails() {
+        const orderItem = await this.orderItemLocator.textContent();
+        const customerName = await this.customerNameLocator.textContent();
+        return { orderItem, customerName };
+    }
 }
+
