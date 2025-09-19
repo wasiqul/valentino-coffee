@@ -13,7 +13,7 @@ export class ShopPage {
         this.addProductToCartButtonLocator = this.productWrapperLocator.getByRole('button', { name: 'Add to cart' });
     }
 
-    async addToCart() {
+    async addToCart(){
         // Essentials for the product
         const productName = await this.productNameLocator.textContent();
         const productPriceWithSign = await this.productPriceLocator.textContent();
