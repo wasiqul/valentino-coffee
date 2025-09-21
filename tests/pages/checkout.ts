@@ -37,7 +37,7 @@ export class CheckoutPage {
         await this.emailLocator.fill(customer.contact.email);
     }
 
-async fillShippingAddress() {
+    async fillShippingAddress() {
         await this.shippingAddressLocator.fill(customer.shipping.address);
         await this.cityLocator.fill(customer.shipping.city);
         await this.countryLocator.fill(customer.shipping.country);
