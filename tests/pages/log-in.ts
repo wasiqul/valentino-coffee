@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 import * as user from "../data/user-info"
 
 export class LogInPage {
@@ -19,5 +19,10 @@ export class LogInPage {
 
     async logInWithCredentials(){
         await this.logInButtonLocator.click();
+
+    }
+
+    async logInSuccess(page: Page){
+        await expect(page).toHaveURL('/');
     }
 }

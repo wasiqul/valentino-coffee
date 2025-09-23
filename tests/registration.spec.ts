@@ -1,11 +1,18 @@
 import {test, expect} from '@playwright/test';
 import { emailUtils } from './utils/email-utils';
+import { user } from "./data/user-info.ts";
 import * as signUpPage from './pages/sign-up';
 import * as signUpConfirmPage from './pages/sign-up-confirm';
 import * as logInPage from './pages/log-in';
+import { join, resolve } from 'path';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 
+const createEmailFlag = process.env.EMAIL_FLAG;
 
 test ('Mailslurp inbox test', async ({page}) => {
+
+    test.skip( createEmailFlag !== 'true', 'Skipping email creation')
+
     // Create the email and get the email address
     const mailSlurpEmailUtil = new emailUtils;
     const myInbox = await mailSlurpEmailUtil.createInbox();
@@ -35,4 +42,21 @@ test ('Mailslurp inbox test', async ({page}) => {
     const myLogInPage = new logInPage.LogInPage(page);
     await myLogInPage.fillCredentials(myEmailAddress);
     await myLogInPage.logInWithCredentials();
+    await myLogInPage.logInSuccess(page);
+
+
+    // Get user credentials in an object in order to write it down in a file
+    const userCredential = {
+        userEmailAddress: myEmailAddress,
+        userPassword: user.password
+    }
+
+    // Providing the directory path
+    const authDir = resolve(__dirname, '../playwright/.auth');
+
+    // Writing user credential in the file
+    writeFileSync(
+        join(authDir, 'loginCreds.json'),
+        JSON.stringify(userCredential,null, 2)
+    );
 })
