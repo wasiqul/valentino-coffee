@@ -5,12 +5,14 @@ export class ShopPage {
     productNameLocator: Locator;
     productPriceLocator: Locator;
     addProductToCartButtonLocator: Locator;
+    toastMessageLocator: Locator;
 
     constructor(page: Page, productIndex: number) {
         this.productWrapperLocator = page.locator('.p-6').nth(productIndex);
         this.productNameLocator = this.productWrapperLocator.getByRole('heading');
         this.productPriceLocator = this.productWrapperLocator.getByText('$');
         this.addProductToCartButtonLocator = this.productWrapperLocator.getByRole('button', { name: 'Add to cart' });
+        this.toastMessageLocator = page.getByRole('region', { name: 'Notifications (F8)' }).getByRole('status');
     }
 
     async addToCart(){

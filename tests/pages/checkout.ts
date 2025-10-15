@@ -1,5 +1,6 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 import { customer } from "../data/customer-info";
+import { user } from "../data/user-info";
 
 
 export class CheckoutPage {
@@ -31,6 +32,12 @@ export class CheckoutPage {
         this.placeOrderButtonLocator = page.locator('[data-test-id="place-order-button"]');
     }
 
+    async checkContactInfo() {
+        await expect(this.firstNameLocator).toHaveValue(user.firstName);
+        await expect(this.lastNameLocator).toHaveValue(user.lastName);
+        await expect(this.emailLocator).toHaveValue(user.email);
+    }
+    
     async fillContactInfo() {
         await this.firstNameLocator.fill(customer.contact.firstName);
         await this.lastNameLocator.fill(customer.contact.lastName);

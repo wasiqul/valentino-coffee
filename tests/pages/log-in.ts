@@ -1,5 +1,4 @@
 import { expect, Locator, Page } from "@playwright/test";
-import * as user from "../data/user-info"
 
 export class LogInPage {
     emailLocator: Locator;
@@ -12,9 +11,9 @@ export class LogInPage {
         this.logInButtonLocator = page.locator('[data-test-id="login-submit-button"]');
     }
 
-    async fillCredentials(userEmail: string){
+    async fillCredentials(userEmail: string, userPassword: string){
         await this.emailLocator.fill(userEmail);
-        await this.passwordLocator.fill(user.user.password);
+        await this.passwordLocator.fill(userPassword);
     }
 
     async logInWithCredentials(){
