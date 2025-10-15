@@ -1,5 +1,6 @@
 import { Locator, Page } from "@playwright/test";
 import * as checkoutInfo from '../data/customer-info';
+import { user } from "../data/user-info";
 
 export class ContactPage {
     contactOrderIdInputLocator: Locator;

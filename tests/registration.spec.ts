@@ -1,15 +1,15 @@
-import {test, expect} from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { emailUtils } from './utils/email-utils';
-import { user } from "./data/user-info.ts";
+import { user } from './data/user-info.ts';
 import * as signUpPage from './pages/sign-up';
 import * as signUpConfirmPage from './pages/sign-up-confirm';
 import * as logInPage from './pages/log-in';
 import { join, resolve } from 'path';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
 
 const createEmailFlag = process.env.EMAIL_FLAG;
 
-test ('Mailslurp inbox test', async ({page}) => {
+test('Mailslurp inbox test', async ({page}) => {
 
     test.skip( createEmailFlag !== 'true', 'Skipping email creation')
 
@@ -38,25 +38,38 @@ test ('Mailslurp inbox test', async ({page}) => {
     await mySignUpConfirmPage.confirmAccount();
 
 
-    // Log in with newly created user
-    const myLogInPage = new logInPage.LogInPage(page);
-    await myLogInPage.fillCredentials(myEmailAddress);
-    await myLogInPage.logInWithCredentials();
-    await myLogInPage.logInSuccess(page);
-
-
     // Get user credentials in an object in order to write it down in a file
-    const userCredential = {
+    const userCredentialWrite = {
         userEmailAddress: myEmailAddress,
         userPassword: user.password
     }
 
-    // Providing the directory path
-    const authDir = resolve(__dirname, '../playwright/.auth');
+    // Resolve the directory inorder to write on file
+    const authDirWrite = resolve(__dirname, '../playwright/.auth');
 
     // Writing user credential in the file
     writeFileSync(
-        join(authDir, 'loginCreds.json'),
-        JSON.stringify(userCredential,null, 2)
+        join(authDirWrite, 'loginCreds.json'),
+        JSON.stringify(userCredentialWrite,null, 2)
     );
+
+    // Log in with newly created user
+    const myLogInPage = new logInPage.LogInPage(page);
+    await myLogInPage.fillCredentials(userCredentialWrite.userEmailAddress, userCredentialWrite.userPassword);
+    await myLogInPage.logInWithCredentials();
+    await myLogInPage.logInSuccess(page);
+})
+
+test('Loggedin test', async ({page}) => {
+    // Go to homepage
+    await page.goto('/');
+
+    // Click on user icon
+    await page.locator('div').filter({ hasText: /^Toggle navigation menu$/ }).locator('div').getByRole('button').click();
+
+    // Get the welcome text
+    const welcomeText = page.getByText('Welcome!');
+
+    // Verify that user logged in and welcome text shown
+    await expect(welcomeText).toBeVisible();
 })
